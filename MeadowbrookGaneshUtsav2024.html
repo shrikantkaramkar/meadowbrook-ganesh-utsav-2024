@@ -3,110 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meadowbrook Ganesh Utsav 2024</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+    <title>Registration Counter</title>
+    <script>
+        async function fetchData() {
+            const apiKey = 'AIzaSyCNFUlR41lvotf9NfWWVU0fDSFja6fiCXc';
+            const spreadsheetId = '1lRCfBcVjQ05N4vGAUvPMP9QY8GPFAVdyRyXYg3pT6f4';
+            const range = 'Sheet1!A:A'; // Assuming "Email Address" is in column A
+
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const emailAddresses = data.values ? data.values.slice(1) : []; // Exclude header row
+                const totalRegistrations = emailAddresses.length;
+
+                document.getElementById('total-registrations').innerText = totalRegistrations;
+
+                const today = new Date();
+                const targetDate = new Date('2024-09-06');
+                const timeDiff = targetDate - today;
+                const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+                document.getElementById('days-remaining').innerText = daysRemaining;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         }
-        h1 {
-            text-align: center;
-            color: #4285F4;
-        }
-        #stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        .stat-box {
-            text-align: center;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-radius: 5px;
-        }
-        #countdown {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-    </style>
+
+        window.onload = fetchData;
+    </script>
 </head>
 <body>
-    <h1>Meadowbrook Ganesh Utsav 2024</h1>
-    <div id="stats">
-        <div class="stat-box">
-            <h3>Total Registrations</h3>
-            <p id="total-registrations">Loading...</p>
-        </div>
-        <div class="stat-box">
-            <h3>Total Adults</h3>
-            <p id="total-adults">Loading...</p>
-        </div>
-        <div class="stat-box">
-            <h3>Total Kids</h3>
-            <p id="total-kids">Loading...</p>
-        </div>
-    </div>
-    <div id="countdown"></div>
-
-    <script src="https://apis.google.com/js/api.js"></script>
-    <script>
-        const SPREADSHEET_ID = '1lRCfBcVjQ05N4vGAUvPMP9QY8GPFAVdyRyXYg3pT6f4';
-        const API_KEY = 'AIzaSyCNFUlR41lvotf9NfWWVU0fDSFja6fiCXc';
-
-        function loadGoogleSheets() {
-            gapi.client.init({
-                'apiKey': API_KEY,
-                'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-            }).then(function() {
-                return gapi.client.sheets.spreadsheets.values.get({
-                    spreadsheetId: SPREADSHEET_ID,
-                    range: 'Sheet1!A:Z', // Fetch all columns to ensure we get the required data
-                });
-            }).then(function(response) {
-                const data = response.result.values;
-                let totalRegistrations = 0;
-                let totalAdults = 0;
-                let totalKids = 0;
-
-                // Find the indices of the relevant columns
-                const headers = data[0];
-                const emailIndex = headers.indexOf('Email Address');
-                const adultsIndex = headers.indexOf('Number of Adults attending the event from your family');
-                const kidsIndex = headers.indexOf('Number of Kids attending the event from your family');
-
-                for (let i = 1; i < data.length; i++) {
-                    if (data[i][emailIndex]) {
-                        totalRegistrations += 1;
-                    }
-                    totalAdults += parseInt(data[i][adultsIndex]) || 0;
-                    totalKids += parseInt(data[i][kidsIndex]) || 0;
-                }
-
-                document.getElementById('total-registrations').textContent = totalRegistrations;
-                document.getElementById('total-adults').textContent = totalAdults;
-                document.getElementById('total-kids').textContent = totalKids;
-            }).catch(function(error) {
-                console.error('Error loading data:', error);
-            });
-        }
-
-        function updateCountdown() {
-            const now = new Date();
-            const targetDate = new Date('2024-09-06');
-            const timeDiff = targetDate - now;
-            const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            document.getElementById('countdown').textContent = `${days} days until September 6, 2024`;
-        }
-
-        gapi.load('client', function() {
-            loadGoogleSheets();
-            updateCountdown();
-            setInterval(updateCountdown, 86400000); // Update countdown daily
-        });
-    </script>
+    <h1>Registration Counter</h1>
+    <p>Total number of Registrations: <span id="total-registrations">Loading...</span></p>
+    <p>Total number of days remaining till Sept 6, 2024: <span id="days-remaining">Loading...</span></p>
 </body>
 </html>
