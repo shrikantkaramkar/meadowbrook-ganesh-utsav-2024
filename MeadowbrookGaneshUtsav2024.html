@@ -54,9 +54,8 @@
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // Replace with your actual API key and spreadsheet ID
-        const API_KEY = 'AIzaSyCNFUlR41lvotf9NfWWVU0fDSFja6fiCXc';
         const SPREADSHEET_ID = '1lRCfBcVjQ05N4vGAUvPMP9QY8GPFAVdyRyXYg3pT6f4';
+        const API_KEY = 'AIzaSyCNFUlR41lvotf9NfWWVU0fDSFja6fiCXc';
 
         function loadGoogleSheets() {
             gapi.client.init({
@@ -81,7 +80,7 @@
                 document.getElementById('total-registrations').textContent = totalRegistrations;
                 document.getElementById('total-adults').textContent = totalAdults;
                 document.getElementById('total-kids').textContent = totalKids;
-            }, function(error) {
+            }).catch(function(error) {
                 console.error('Error loading data:', error);
             });
         }
@@ -94,9 +93,11 @@
             document.getElementById('countdown').textContent = `${days} days until September 6, 2024`;
         }
 
-        gapi.load('client', loadGoogleSheets);
-        updateCountdown();
-        setInterval(updateCountdown, 86400000); // Update countdown daily
+        gapi.load('client', function() {
+            loadGoogleSheets();
+            updateCountdown();
+            setInterval(updateCountdown, 86400000); // Update countdown daily
+        });
     </script>
 </body>
 </html>
