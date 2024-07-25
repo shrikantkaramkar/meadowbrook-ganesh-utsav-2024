@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Counter</title>
+    <script>
+        async function fetchData() {
+            const apiKey = 'AIzaSyCNFUlR41lvotf9NfWWVU0fDSFja6fiCXc';
+            const spreadsheetId = '1lRCfBcVjQ05N4vGAUvPMP9QY8GPFAVdyRyXYg3pT6f4';
+            const range = 'Sheet1!A:A'; // Assuming "Email Address" is in column A
+
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const emailAddresses = data.values ? data.values.slice(1) : []; // Exclude header row
+                const totalRegistrations = emailAddresses.length;
+
+                document.getElementById('total-registrations').innerText = totalRegistrations;
+
+                const today = new Date();
+                const targetDate = new Date('2024-09-06');
+                const timeDiff = targetDate - today;
+                const daysRemaining = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+                document.getElementById('days-remaining').innerText = daysRemaining;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        window.onload = fetchData;
+    </script>
+</head>
+<body>
+    <h1>Registration Counter</h1>
+    <p>Total number of Registrations: <span id="total-registrations">Loading...</span></p>
+    <p>Total number of days remaining till Sept 6, 2024: <span id="days-remaining">Loading...</span></p>
+</body>
+</html>
