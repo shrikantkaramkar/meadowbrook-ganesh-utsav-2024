@@ -64,17 +64,26 @@
             }).then(function() {
                 return gapi.client.sheets.spreadsheets.values.get({
                     spreadsheetId: SPREADSHEET_ID,
-                    range: 'Sheet1!A:D',
+                    range: 'Sheet1!A:Z', // Fetch all columns to ensure we get the required data
                 });
             }).then(function(response) {
                 const data = response.result.values;
-                let totalRegistrations = data.length - 1; // Subtract 1 for header row
+                let totalRegistrations = 0;
                 let totalAdults = 0;
                 let totalKids = 0;
 
+                // Find the indices of the relevant columns
+                const headers = data[0];
+                const emailIndex = headers.indexOf('Email Address');
+                const adultsIndex = headers.indexOf('Number of Adults attending the event from your family');
+                const kidsIndex = headers.indexOf('Number of Kids attending the event from your family');
+
                 for (let i = 1; i < data.length; i++) {
-                    totalAdults += parseInt(data[i][2]) || 0;
-                    totalKids += parseInt(data[i][3]) || 0;
+                    if (data[i][emailIndex]) {
+                        totalRegistrations += 1;
+                    }
+                    totalAdults += parseInt(data[i][adultsIndex]) || 0;
+                    totalKids += parseInt(data[i][kidsIndex]) || 0;
                 }
 
                 document.getElementById('total-registrations').textContent = totalRegistrations;
