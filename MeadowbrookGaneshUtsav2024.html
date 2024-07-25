@@ -3,22 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Counter</title>
+    <title>Meadowbrook Ganesh Utsav 2024</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('ganesha-background.jpg'); /* Add your Ganesha image here */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            color: black;
+        }
+        .tile {
+            background-color: orange;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .tile p {
+            margin: 10px 0;
+            font-size: 1.5em;
+        }
+        .tile span {
+            font-weight: bold;
+        }
+    </style>
     <script>
         async function fetchData() {
             const apiKey = 'AIzaSyCUCWZIfocnjgWSEyrFq19_VrGSepM_NwE';
             const spreadsheetId = '1lRCfBcVjQ05N4vGAUvPMP9QY8GPFAVdyRyXYg3pT6f4';
-            const range = 'Sheet1!A:A'; // Assuming "Email Address" is in column A
+            const range = 'Registrations!1:166'; // "Email Address" is in column B of the "Registrations" sheet
 
             const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
 
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                const emailAddresses = data.values ? data.values.slice(1) : []; // Exclude header row
-                const totalRegistrations = emailAddresses.length;
+                console.log('Fetched data:', data); // Debugging: Log the fetched data
 
-                document.getElementById('total-registrations').innerText = totalRegistrations;
+                if (data.values) {
+                    const emailAddresses = data.values.slice(1); // Exclude header row
+                    const totalRegistrations = emailAddresses.length;
+                    document.getElementById('total-registrations').innerText = totalRegistrations;
+                } else {
+                    document.getElementById('total-registrations').innerText = '0';
+                }
 
                 const today = new Date();
                 const targetDate = new Date('2024-09-06');
@@ -28,6 +63,8 @@
                 document.getElementById('days-remaining').innerText = daysRemaining;
             } catch (error) {
                 console.error('Error fetching data:', error);
+                document.getElementById('total-registrations').innerText = 'Error';
+                document.getElementById('days-remaining').innerText = 'Error';
             }
         }
 
@@ -35,8 +72,10 @@
     </script>
 </head>
 <body>
-    <h1>Registration Counter</h1>
-    <p>Total number of Registrations: <span id="total-registrations">Loading...</span></p>
-    <p>Total number of days remaining till Sept 6, 2024: <span id="days-remaining">Loading...</span></p>
+    <h1>Meadowbrook Ganesh Utsav 2024</h1>
+    <div class="tile">
+        <p>Total number of Registrations: <span id="total-registrations">Loading...</span></p>
+        <p>Total number of days remaining till Sept 6, 2024: <span id="days-remaining">Loading...</span></p>
+    </div>
 </body>
 </html>
