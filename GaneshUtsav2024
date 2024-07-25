@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meadowbrook Ganesh Utsav 2024</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4285F4;
+        }
+        #stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        #countdown {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Meadowbrook Ganesh Utsav 2024</h1>
+    <div id="stats">
+        <div class="stat-box">
+            <h3>Total Registrations</h3>
+            <p id="total-registrations">Loading...</p>
+        </div>
+        <div class="stat-box">
+            <h3>Total Adults</h3>
+            <p id="total-adults">Loading...</p>
+        </div>
+        <div class="stat-box">
+            <h3>Total Kids</h3>
+            <p id="total-kids">Loading...</p>
+        </div>
+    </div>
+    <div id="countdown"></div>
+
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Replace with your actual API key and spreadsheet ID
+        const API_KEY = 'YOUR_API_KEY';
+        const SPREADSHEET_ID = '1lRCfBcVjQ05N4vGAUvPMP9QY8GPFAVdyRyXYg3pT6f4';
+
+        function loadGoogleSheets() {
+            gapi.client.init({
+                'apiKey': API_KEY,
+                'discoveryDocs': ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            }).then(function() {
+                return gapi.client.sheets.spreadsheets.values.get({
+                    spreadsheetId: SPREADSHEET_ID,
+                    range: 'Sheet1!A:D',
+                });
+            }).then(function(response) {
+                const data = response.result.values;
+                let totalRegistrations = data.length - 1; // Subtract 1 for header row
+                let totalAdults = 0;
+                let totalKids = 0;
+
+                for (let i = 1; i < data.length; i++) {
+                    totalAdults += parseInt(data[i][2]) || 0;
+                    totalKids += parseInt(data[i][3]) || 0;
+                }
+
+                document.getElementById('total-registrations').textContent = totalRegistrations;
+                document.getElementById('total-adults').textContent = totalAdults;
+                document.getElementById('total-kids').textContent = totalKids;
+            }, function(error) {
+                console.error('Error loading data:', error);
+            });
+        }
+
+        function updateCountdown() {
+            const now = new Date();
+            const targetDate = new Date('2024-09-06');
+            const timeDiff = targetDate - now;
+            const days = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            document.getElementById('countdown').textContent = `${days} days until September 6, 2024`;
+        }
+
+        gapi.load('client', loadGoogleSheets);
+        updateCountdown();
+        setInterval(updateCountdown, 86400000); // Update countdown daily
+    </script>
+</body>
+</html>
